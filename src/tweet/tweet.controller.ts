@@ -17,8 +17,14 @@ export class TweetController {
     return this.tweetService.create(user, createTweetDto);
   }
 
+  @Get()
+  @UseGuards(AuthGuard)
+  findAll(@User('id') currentUserId: number) {
+    return this.tweetService.findAllHome(currentUserId)
+  }
 
   @Get(":id")
+  @UseGuards(AuthGuard)
   findOne(@Param("id") id: string) {
     return this.tweetService.findOne(+id);
   }
