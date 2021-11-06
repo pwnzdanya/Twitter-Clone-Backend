@@ -16,15 +16,13 @@ export class TweetService {
         id: user.id,
         fullName: user.fullName,
         username: user.username,
-        avatar: user.avatar
+        avatar: user.avatar,
       },
       text: createTweetDto.text,
       isLiked: false
     };
     return await this.tweetRepository.save(tweet);
   }
-
-
 
   findOne(id: number) {
     return `This action returns a #${id} tweet`;

@@ -1,16 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { IUserResponse } from "./types/user.types";
-import { LoginUserDto } from "./dto/login-user.dto";
-import { User } from "./decorators/user.decorator";
-import { UserEntity } from "./entities/user.entity";
-import { AuthGuard } from "./guards/auth.guard";
+import {Body, Controller, Delete, Get, Param, Patch, Post, UseGuards} from "@nestjs/common";
+import {UserService} from "./user.service";
+
+import {UpdateUserDto} from "./dto/update-user.dto";
+
+import {AuthGuard} from "./guards/auth.guard";
+import {User} from "./decorators/user.decorator";
 
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {
+  }
+
+  @Get(":username")
+  @UseGuards(AuthGuard)
+  async get(@Param("username") username: string, @User('id') currentUserId: number) {
+
+    const user = await this.userService.get(username)
+
+    return await this.userService.buildFullUserRes(user, currentUserId)
   }
 
   @Patch(":id")
@@ -19,5 +26,17 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+
+  @Post(':username/follow')
+  @UseGuards(AuthGuard)
+  async follow(@Param('username') username: string, @User('id') currentUserId: number) {
+    return await this.userService.follow(currentUserId, username)
+  }
+
+  @Delete(':username/follow')
+  @UseGuards(AuthGuard)
+  async unfollow(@Param('username') username: string, @User('id') currentUserId: number) {
+    return await this.userService.unfollow(currentUserId, username)
+  }
 
 }
